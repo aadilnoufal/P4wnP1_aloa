@@ -1,5 +1,3 @@
-// +build linux
-
 package service
 
 import (
@@ -24,6 +22,7 @@ import (
 
 const (
 	wifi_if_name                   string = "wlan0"
+	wifi_if_name_pizero2w          string = "wlan1"
 	WPA_SUPPLICANT_CONNECT_TIMEOUT        = time.Second * 20
 	HOSTAPD_WAIT_AP_UP_TIMEOUT        = time.Second * 8
 )
@@ -443,6 +442,9 @@ func (wSvc *WiFiService) DeploySettings(newWifiSettings *pb.WiFiSettings) (wstat
 
 func NewWifiService(rootSvc *Service) (res *WiFiService) {
 	ifName := wifi_if_name
+	if isPiZero2W() {
+		ifName = wifi_if_name_pizero2w
+	}
 	err := wifiCheckExternalBinaries()
 	if err != nil {
 		panic(err)
@@ -450,7 +452,7 @@ func NewWifiService(rootSvc *Service) (res *WiFiService) {
 
 	//Check interface existence
 	if exists := CheckInterfaceExistence(ifName); !exists {
-		panic(errors.New(fmt.Sprintf("WiFi interface '%s' not present")))
+		panic(errors.New(fmt.Sprintf("WiFi interface '%s' not present", ifName)))
 	}
 
 	res = &WiFiService{
@@ -988,4 +990,10 @@ func ProcSoftKill(cmd *exec.Cmd, timeToKill time.Duration) (err error) {
 		cmd.Process.Kill()
 		return nil
 	}
+}
+
+func isPiZero2W() bool {
+	// Implement logic to detect if the device is a Pi Zero 2W
+	// This can be done by checking the device model or other hardware-specific information
+	return false
 }

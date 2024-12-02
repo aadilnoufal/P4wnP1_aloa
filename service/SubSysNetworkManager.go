@@ -37,11 +37,22 @@ func NewNetworkManager(rootService *Service) (nm *NetworkManager, err error){
 	err = nm.AddManagedInterface(GetDefaultNetworkSettingsBluetooth())
 	if err != nil { return }
 
+	// Pi Zero 2W specific configurations
+	if isPiZero2W() {
+		err = nm.AddManagedInterface(GetDefaultNetworkSettingsPiZero2W())
+		if err != nil { return }
+	}
+
 	//ToDo: Deploy all settings once, to assure consistency of server state and real adapter configuration
 
 	return nm, nil
 }
 
+func isPiZero2W() bool {
+	// Implement logic to detect if the device is a Pi Zero 2W
+	// This can be done by checking the device model or other hardware-specific information
+	return false
+}
 
 type NetworkManager struct {
 	ManagedInterfaces map[string]*NetworkInterfaceManager
@@ -72,8 +83,6 @@ func (nm *NetworkManager) GetManagedInterface(name string) (nim *NetworkInterfac
 		return nil, ErrUnmanagedInterface
 	}
 }
-
-
 
 type NetworkInterfaceState struct {
 	InterfacePresent bool
